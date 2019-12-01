@@ -344,7 +344,7 @@ void rsp_dev::reinitDevice(int reason)
     // Tell stream CB to return
     _reinit = true;
 
-    mir_sdr_Reinit(&gRdB,
+    mir_sdr_ErrT _error = mir_sdr_Reinit(&gRdB,
                    _fsHz / 1e6,
                    _rfHz / 1e6,
                    _bwType,
@@ -355,6 +355,12 @@ void rsp_dev::reinitDevice(int reason)
                    mir_sdr_USE_RSP_SET_GR,
                    &_samplesPerPacket,
                    (mir_sdr_ReasonForReinitT)reason);
+    if (mir_sdr_Success != _error & mir_sdr_NotInitialised != _error)
+    {
+        std::cerr << "Failed to reinit SDRplay device. ERROR: " << _error << std::endl;
+        throw std::runtime_error("Failed to reinit SDRplay device ");
+    }  
+    else std::cerr << "----------reinit SDRplay device. CODE: " << _error << std::endl;             
 
     // Set decimation with halfband filter
     if (reason & (int)mir_sdr_CHANGE_FS_FREQ)
