@@ -1,0 +1,13 @@
+[Unit]
+Description=dect_rcv
+After=syslog.target network.target 
+
+[Service]
+Type=simple
+ExecStart=/home/dect/dect/dectrcv
+ExecStop=/bin/killall -s KILL dectrcv
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
